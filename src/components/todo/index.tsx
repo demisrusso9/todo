@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
 import { styles } from './styles'
-import trashIcon from '../../../assets/trash.png'
-import checkIcon from '../../../assets/check.png'
-import uncheckIcon from '../../../assets/uncheck.png'
+import trashIcon from '../../assets/trash.png'
+import checkIcon from '../../assets/check.png'
+import uncheckIcon from '../../assets/uncheck.png'
 
 interface TodoProps {
   todo: {

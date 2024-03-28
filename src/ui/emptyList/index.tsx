@@ -1,6 +1,6 @@
 import { View, Image, Text } from 'react-native'
 import { styles } from './styles'
-import clipboard from '../../../assets/clipboard.png'
+import clipboard from '../../assets/clipboard.png'
 
 export function EmptyList() {
   return (

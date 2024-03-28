@@ -10,7 +10,7 @@ import {
 import { styles } from './styles'
 import { Header } from '../../components/header'
 import { useState } from 'react'
-import plus from '../../../assets/plus.png'
+import plus from '../../assets/plus.png'
 import { EmptyList } from '../../ui/emptyList'
 import { Todo } from '../../components/todo'
 
