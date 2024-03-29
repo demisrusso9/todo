@@ -9,12 +9,18 @@ import {
 } from 'react-native'
 import { styles } from './styles'
 import { Header } from '../../components/header'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import plus from '../../assets/plus.png'
 import { EmptyList } from '../../ui/emptyList'
 import { Todo } from '../../components/todo'
+import {
+  todoCreate,
+  todoEdit,
+  todoGetAll,
+  todoRemove
+} from '../../storage/todo'
 
-interface TodosProps {
+export interface TodosProps {
   id: number
   name: string
   favorite: boolean
@@ -26,22 +32,45 @@ export function Home() {
 
   const [isFocused, setFocus] = useState(false)
 
-  function handleAddTodo() {
+  async function fetchTodos() {
+    try {
+      const storage = await todoGetAll()
+
+      setTodos(storage)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function handleAddTodo() {
     if (todo.trim() === '') return
 
-    const newTodo = { id: Math.random(), name: todo, favorite: false }
+    try {
+      const newTodo = { id: Math.random(), name: todo, favorite: false }
 
-    setTodos(state => [newTodo, ...state])
-    setTodo('')
+      await todoCreate(newTodo)
+
+      setTodos(state => [newTodo, ...state])
+      setTodo('')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async function removeTodo(id: number) {
+    try {
+      await todoRemove(id)
+      setTodos(state => state.filter(todo => todo.id !== id))
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   function handleRemoveTodo(id: number) {
     return Alert.alert('Tarefa', 'Deseja deletar essa tarefa?', [
       {
         text: 'Sim',
-        onPress: () => {
-          setTodos(state => state.filter(todo => todo.id !== id))
-        }
+        onPress: () => removeTodo(id)
       },
       {
         text: 'Não',
@@ -50,18 +79,34 @@ export function Home() {
     ])
   }
 
-  function handleToggleFavorite(id: number) {
-    setTodos(state => [
-      ...state.map(todo =>
-        todo.id === id ? { ...todo, favorite: !todo.favorite } : todo
-      )
-    ])
+  async function handleToggleFavorite(id: number) {
+    const todo = todos.find(todo => todo.id === id)
+
+    if (todo) {
+      const updatedTodo = {
+        ...todo,
+        favorite: !todo.favorite
+      }
+
+      const updatedTodos = todos.map(t => (t.id === id ? updatedTodo : t))
+
+      try {
+        await todoEdit(updatedTodo)
+        setTodos(updatedTodos)
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   const totalCreated = todos.length
   const totalFavorite = todos.reduce((acc, todo) => {
     return todo.favorite ? acc + 1 : acc
   }, 0)
+
+  useEffect(() => {
+    fetchTodos()
+  }, [])
 
   return (
     <>
